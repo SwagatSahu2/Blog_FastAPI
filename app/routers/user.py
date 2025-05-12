@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List
-from .. import schemas, database
+from .. import schemas, database, models, hashing
+from ..database import get_db
 from sqlalchemy.orm import Session
 
 router = APIRouter()
@@ -19,6 +20,8 @@ def create_user(request: schemas.User, db: Session=Depends(database.get_db)):
     return new_user
 
 @router.get('/user/{id}', response_model=schemas.ShowUser, tags=["users"])
-def get_user(id: int, db: Session=Depends(database.get_db)):
-    user = db.query(models.User).filter(models.User.id==id).first()
+def get_user(id: int, db: Session = Depends(database.get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User with ID {id} not found")
     return user

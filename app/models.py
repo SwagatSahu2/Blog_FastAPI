@@ -9,6 +9,7 @@ class Blog(Base):
     body=Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
     creator = relationship("User", back_populates="blogs")
+    comments = relationship("Comment", back_populates="blog")
 
 class User(Base):
     __tablename__='users'
@@ -17,3 +18,14 @@ class User(Base):
     email = Column(String)
     password = Column(String)
     blogs = relationship("Blog", back_populates="creator")
+    comments = relationship("Comment", back_populates="user")
+
+class Comment(Base):
+    __tablename__='comments'
+    id = Column(Integer, primary_key=True, index=True)
+    body = Column(String)
+    blog_id = Column(Integer, ForeignKey('blogs.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
+    blog = relationship("Blog", back_populates="comments")
+    user = relationship("User", back_populates="comments")
+

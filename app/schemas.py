@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 class Blog(BaseModel):
     title: str
@@ -39,4 +39,17 @@ class ShowBlog(BaseModel):
     creator: Optional[ShowUser]
 
     class Config():
+        orm_mode = True
+
+
+class CommentBase(BaseModel):
+    body: str
+    
+
+class Comment(CommentBase):
+    id: int
+    blog: Optional[ShowBlog]
+    user: Optional[ShowUser]
+
+    class Config:
         orm_mode = True
