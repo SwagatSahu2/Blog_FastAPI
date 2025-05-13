@@ -1,0 +1,11 @@
+queries:
+  get_blog_titles: "SELECT title FROM blogs"
+  get_blog_fields: "SELECT {attribute} FROM blogs"
+  get_blog_creator: |
+    SELECT 
+        users.name AS creator_name, 
+        users.email AS creator_email
+    FROM blogs
+    JOIN users ON blogs.user_id = users.id
+    WHERE blogs.id = :blog_id
+  get_blogs_by_user: "SELECT blogs.title, blogs.body FROM blogs WHERE user_id = :user_id"
