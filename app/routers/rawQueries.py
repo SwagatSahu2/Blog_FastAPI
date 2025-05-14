@@ -20,8 +20,35 @@ def get_blog_titles_raw(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
+# @router.get('/raw/blog-fields')
+# def get_blog_fields_raw(attribute: str, db: Session = Depends(get_db)):
+#     try:
+#         query = text(queries["get_blog_fields"].format(attribute=attribute))
+#         result = db.execute(query)
+#         fields = [row[0] for row in result]
+#         if not fields:
+#             raise HTTPException(status_code=404, detail=f"No data found for attribute '{attribute}'")
+#         return {"fields": fields}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
+@router.get("/raw/available-attributes")
+def get_available_attributes():
+    return {
+        "available_attributes": [
+            "title",
+            "body",
+        ]
+    }
+
+
+VALID_ATTRIBUTES = {"title", "body"}
+
 @router.get('/raw/blog-fields')
 def get_blog_fields_raw(attribute: str, db: Session = Depends(get_db)):
+    if attribute not in VALID_ATTRIBUTES:
+        raise HTTPException(status_code=400, detail=f"Invalid attribute '{attribute}'. Use /raw/available-attributes to see valid options.")
+    
     try:
         query = text(queries["get_blog_fields"].format(attribute=attribute))
         result = db.execute(query)
@@ -31,6 +58,7 @@ def get_blog_fields_raw(attribute: str, db: Session = Depends(get_db)):
         return {"fields": fields}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
 
 @router.get('/raw/blog-creator')
 def get_blog_creator_raw(blog_id: int, db: Session = Depends(get_db)):
